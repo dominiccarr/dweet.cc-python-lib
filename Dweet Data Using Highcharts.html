@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Highcharts Side-by-Side Charts</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="dweet.cc.js"></script>
+  <style>
+    .chart-container {
+      display: flex;            /* side by side */
+      gap: 20px;                /* space between charts */
+    }
+    .chart-box {
+      width: 50%;               /* each chart takes half width */
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chart-container">
+  <div id="chart1" class="chart-box"></div>
+  <div id="chart2" class="chart-box"></div>
+</div>
+
+  <script>
+    // Chart 1
+    const chart1 = Highcharts.chart('chart1', {
+      chart: { type: 'line' },
+      title: { text: 'Temperature' },
+      xAxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'] },
+      yAxis: { title: { text: 'Value' } },
+      series: [{
+        name: 'Series A',
+        data: [10, 20, 15, 25, 30]
+      }]
+    });
+
+    // Chart 2
+    const chart2 = Highcharts.chart('chart2', {
+      chart: { type: 'line' },
+      title: { text: 'Humidity' },
+      xAxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'] },
+      yAxis: { title: { text: 'Value' } },
+      series: [{
+        name: 'Series C',
+        data: [12, 18, 14, 22, 28]
+      }]
+    });
+	
+	var name = 'therapeutic-caption'
+
+	dweetio.get_all_dweets_for(name, function(err, dweets){
+	    for(theDweet in dweets.reverse())
+	    {
+	        var dweet = dweets[theDweet];
+
+			val = dweet.content["temperature"]
+			val2 = dweet.content["humidity"]
+			temp = parseInt(val)
+			humidity= parseInt(val2)
+			time = dweet.created
+			chart1.xAxis[0].categories.push(time);
+			chart1.series[0].addPoint(temp);
+			chart2.xAxis[0].categories.push(time);
+			chart2.series[0].addPoint(humidity);
+	    }
+	});
+	
+	dweetio.listen_for(name, function(dweet){
+		val = dweet.content["temperature"]
+		val2 = dweet.content["humidity"]
+		temp = parseInt(val)
+		humidity= parseInt(val2)
+		time = dweet.created
+		chart1.xAxis[0].categories.push(time);
+		chart1.series[0].addPoint(temp);
+		chart2.xAxis[0].categories.push(time);
+		chart2.series[0].addPoint(humidity);
+	});
+
+  </script>
+</body>
+</html>
